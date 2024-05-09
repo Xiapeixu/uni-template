@@ -6,8 +6,10 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "./src/public.scss";
-        @import "./src/uni.scss";`,
+        additionalData: `
+        @import "@/css/attribute.scss";
+        @import "@/css/style.scss";
+        `,
       },
     },
   },

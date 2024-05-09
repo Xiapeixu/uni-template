@@ -1,0 +1,225 @@
+.f1 {
+  flex: 1
+}
+
+.w100 {
+  width: 100%;
+}
+
+.h100 {
+  height: 100%;
+}
+
+
+.rela {
+  position: relative;
+}
+
+.abso {
+  position: absolute;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.grid {
+  display: grid;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-ac {
+  display: flex;
+  align-items: center;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.justify-b,
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-c,
+.justify-center {
+  justify-content: center;
+}
+
+.justify-e,
+.justify-end {
+  justify-content: flex-end;
+}
+
+.t-c {
+  text-align: center;
+}
+
+.t-l {
+  text-align: left;
+}
+
+.t-r {
+  text-align: right;
+}
+
+.padding {
+  padding: $page-spacing;
+}
+
+.p-t {
+  padding-top: $spacing;
+}
+
+.p-d {
+  padding-bottom: $spacing;
+}
+
+.m-t {
+  margin-top: $spacing;
+}
+
+.m-b {
+  margin-bottom: $spacing;
+}
+
+.m-b-16 {
+  margin-bottom: $spacing;
+}
+
+.m-auto {
+  margin: auto;
+}
+
+// 小字体
+.text24 {
+  font-size: $font-size-sm;
+}
+
+// 中字体
+.text28 {
+  font-size: $font-size-base;
+}
+
+// 大字体
+.text34 {
+  font-size: $font-size-lg;
+}
+
+// 文本溢出
+.text-e {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 文字对齐
+.t-a-l {
+  text-align-last: justify;
+}
+
+.t-c-f {
+  color: $color-f;
+}
+
+.t-c-g {
+  color: $color-999;
+}
+
+.t-c-z {
+  color: $primary-color;
+}
+
+.bg-c-f {
+  background: $color-f;
+}
+
+.border-r {
+  border-radius: $spacing;
+}
+
+.btn-style {
+  width: 686rpx;
+  height: $btn-height;
+  line-height: $btn-height;
+  background: $primary-color;
+  border-radius: $spacing;
+  margin: auto;
+}
+
+.btn-transform {
+  left: 50%;
+  bottom: $spacing;
+  transform: translate(-50%);
+}
+
+.t-w {
+  width: 110rpx;
+}
+
+.radio {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  margin-right: 10rpx;
+  background: #d9d9d9;
+
+  &-color {
+    background: #25b0ff;
+  }
+}
+
+.required {
+  position: relative;
+  padding-left: 20rpx;
+
+  &::before {
+    content: "*";
+    color: red;
+    font-size: 30rpx;
+    position: absolute;
+    left: 0;
+  }
+}
+
+.input-box {
+  padding: 22rpx 20rpx;
+  background: #f2fbff;
+  border-radius: 12rpx;
+}
+
+.input-text {
+  font-family: PingFang SC, PingFang SC;
+  font-size: $font-size-sm;
+  color: #333333;
+}
+
+.border-r-16 {
+  border-radius: 16rpx;
+}
+
+.icon-style {
+  width: $tabbar-icon;
+  height: $tabbar-icon;
+}
+
+.jg-box-style {
+  width: 77rpx;
+  height: 77rpx;
+  background-color: $jg-bg-color;
+  border-radius: 50%;
+}
