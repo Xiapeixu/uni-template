@@ -2,6 +2,7 @@
   "name": "uni-preset-vue",
   "version": "0.0.0",
   "scripts": {
+    "push":"git push & git push gitee",
     "test": "uni",
     "build": "uni build",
     "dev:app": "uni -p app",
