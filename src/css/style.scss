@@ -46,6 +46,11 @@
   justify-content: center;
 }
 
+.align-e,
+.align-end {
+  align-items: flex-end;
+}
+
 .flex-column {
   flex-direction: column;
 }
@@ -77,16 +82,28 @@
   text-align: right;
 }
 
+.box-s {
+  box-sizing: border-box;
+}
+
 .padding {
-  padding: $page-spacing;
+  padding: $spacing-page;
+}
+
+.padding-c {
+  padding: $spacing-content;
 }
 
 .p-t {
   padding-top: $spacing;
 }
 
-.p-d {
+.p-b {
   padding-bottom: $spacing;
+}
+
+.p-b-tabbar {
+  padding-bottom: $tabbar-height;
 }
 
 .m-t {
@@ -97,12 +114,34 @@
   margin-bottom: $spacing;
 }
 
-.m-b-16 {
-  margin-bottom: $spacing;
+.m-b-c {
+  margin-bottom: $spacing-content;
+}
+
+.m-r {
+  margin-right: $spacing;
+}
+
+.m-l-c {
+  margin-left: $spacing-content;
+}
+
+.m-r-c {
+  margin-right: $spacing-content;
 }
 
 .m-auto {
   margin: auto;
+}
+
+.m-rl-c {
+  margin-left: $spacing-content;
+  margin-right: $spacing-content;
+}
+
+.l-b-0 {
+  left: 0;
+  bottom: 0;
 }
 
 // 小字体
@@ -116,7 +155,7 @@
 }
 
 // 大字体
-.text34 {
+.text32 {
   font-size: $font-size-lg;
 }
 
@@ -127,49 +166,95 @@
   white-space: nowrap;
 }
 
+.text-d {
+  text-decoration: line-through;
+}
+
 // 文字对齐
 .t-a-l {
   text-align-last: justify;
+  width: 120rpx;
+}
+
+.t-c-b {
+  color: $color-b;
 }
 
 .t-c-f {
   color: $color-f;
 }
 
+.t-c-r {
+  color: $color-r;
+}
+
+
 .t-c-g {
-  color: $color-999;
+  color: $color-7;
 }
 
 .t-c-z {
   color: $primary-color;
 }
 
+.t-c-9 {
+  color: $color-9;
+}
+
 .bg-c-f {
   background: $color-f;
+}
+
+.bg-c-g {
+  background: $color-g;
 }
 
 .border-r {
   border-radius: $spacing;
 }
 
+.border-r-c {
+  border-radius: $spacing-content;
+}
+
+.border-b-l {
+  border-bottom: 1px solid #EEEEEE;
+}
+
+.border-t-l {
+  border-top: 1px solid #EEEEEE;
+}
+
 .btn-style {
-  width: 686rpx;
-  height: $btn-height;
   line-height: $btn-height;
   background: $primary-color;
-  border-radius: $spacing;
-  margin: auto;
+  padding: 0 40rpx;
+  box-sizing: border-box;
+  border-radius: $spacing*2;
+  color: $color-f;
+  text-align: center;
 }
 
 .btn-transform {
+  position: fixed;
   left: 50%;
   bottom: $spacing;
   transform: translate(-50%);
 }
 
-.t-w {
-  width: 110rpx;
+.btn-w100 {
+  width: calc(100% - $spacing-page * 2);
 }
+
+.btn-l-h {
+  line-height: 70rpx;
+}
+
+.btn-h {
+  height: $btn-height;
+}
+
+
 
 .radio {
   width: 24rpx;
@@ -200,12 +285,6 @@
   padding: 22rpx 20rpx;
   background: #f2fbff;
   border-radius: 12rpx;
-}
-
-.input-text {
-  font-family: PingFang SC, PingFang SC;
-  font-size: $font-size-sm;
-  color: #333333;
 }
 
 .border-r-16 {
