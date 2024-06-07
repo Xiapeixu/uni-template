@@ -5,6 +5,15 @@
       "style": {
         "navigationBarTitleText": "uni-app"
       }
+    },
+    {
+      "path": "pages/test/index",
+      "style": {
+        "navigationBarBackgroundColor": "#F8F8F8",
+        "navigationBarTitleText": "测试页面",
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": true //开启下拉刷新
+      }
     }
   ],
   "globalStyle": {
