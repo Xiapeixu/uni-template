@@ -11,8 +11,8 @@
       "style": {
         "navigationBarBackgroundColor": "#F8F8F8",
         "navigationBarTitleText": "测试页面",
-        "navigationStyle": "custom",
-        "enablePullDownRefresh": true //开启下拉刷新
+        "navigationStyle": "custom"
+        // "enablePullDownRefresh": true //开启下拉刷新
       }
     }
   ],
@@ -27,7 +27,7 @@
     // 匹配components目录内的vue文件
     "custom": {
       "^uni-(.*)": "@/components/uni-$1.vue",
-      "^xpx-(.*)": "@/components/xpx-$1.vue"
+      "^xpx-(.*)": "@/components/components/xpx-$1.vue"
     }
   }
 }

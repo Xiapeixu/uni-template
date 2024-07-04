@@ -1,12 +1,5 @@
 <template>
-  <swiper
-    class="swiper"
-    circular
-    :indicator-dots="props.indicatorDots"
-    :autoplay="true"
-    :interval="props.interval"
-    :duration="props.duration"
-  >
+  <swiper class="swiper" circular :indicator-dots="props.indicatorDots" :autoplay="true" :interval="props.interval" :duration="props.duration">
     <swiper-item class="swiper-item" v-for="(item, index) in imgList" :key="index">
       <image
         class="swiper-img"

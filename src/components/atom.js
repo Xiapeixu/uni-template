@@ -1,16 +1,22 @@
 import { ref } from "vue";
 import _enum from "./enum";
+import * as a_calc from "a-calc";
 
-export default function atom() {
+export default () => {
   const data = {
-    page: {
+    // 分页
+    page: ref({
       // 页码
       page: 1,
       // 每页数据条数
       size: 10,
       // 总数据条数
       total: 0,
-    },
+    }),
+    // 数据列表
+    dataArray: ref([]),
+    // 滚动列表下拉状态
+    triggered: ref(false),
     // 查询参数
     query: ref({}),
     // 提交参数
@@ -74,11 +80,34 @@ export default function atom() {
     showtoast,
     // 获取当前年月日
     getCurrentDate,
+    // 刷新
+    refresherrefresh() {
+      console.log("刷新");
+      data.triggered.value = true;
+      setTimeout(() => {
+        data.triggered.value = false;
+      }, 1000);
+    },
+    // 加载
+    scrolltolower() {
+      let page = data.page.value.page;
+      page++;
+      const res = {
+        data: page <= 3 ? [1, 2] : [],
+      };
+      if (res.data.length) {
+        data.page.value.page = page;
+      }
+      console.log(data.page.value.page);
+    },
+    // // 计算
+    calc,
+    fmt,
   };
   const atom = Object.assign(data, methods);
   Object.freeze(atom);
   return atom;
-}
+};
 
 // 获取当前年月日
 export function getCurrentDate() {
@@ -96,3 +125,8 @@ export function showtoast(title) {
     duration: 2000,
   });
 }
+
+// 计算
+export const calc = a_calc.calc;
+// 数字格式化
+export const fmt = a_calc.fmt;
