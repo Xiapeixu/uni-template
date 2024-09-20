@@ -1,18 +1,20 @@
-<script>
-export default {
-  onLaunch: function () {
-    console.log("App Launch");
-  },
-  onShow: async () => {
-    console.log("App Show");
-  },
-  onHide: function () {
-    console.log("App Hide");
-  },
-};
+<script setup>
+import { onHide, onLaunch, onShow } from "@dcloudio/uni-app";
+
+onLaunch(() => {
+  console.log("App Launch");
+});
+onShow(() => {
+  console.log("App Show");
+});
+onHide(() => {
+  console.log("App Hide");
+});
 </script>
 
 <style lang="scss">
+/** 公共样式 */
+@import "@/css/style.scss";
 /*每个页面公共css */
 page {
   background: #f8f8f8;

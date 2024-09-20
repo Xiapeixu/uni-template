@@ -54,6 +54,11 @@
     "setting": {
       "urlCheck": false
     },
+    // 按需注入
+    "lazyCodeLoading": "requiredComponents",
+    "optimization": {
+      "subPackages": true
+    },
     "usingComponents": true
   },
   "mp-alipay": {

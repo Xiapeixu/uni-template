@@ -1,95 +1,77 @@
+import baseUrl from "@/http/base.js";
+import { getToken, showtoast } from "@/common/tools/util";
+let config = {
+  baseUrl,
+  headers: {},
+  dataType: "json",
+  responseType: "text",
+  // timeout: 1,
+};
+const interceptor = {
+  request(options) {
+    if (options.isLoading) {
+      //添加通用参数
+      uni.showLoading({
+        title: "加载中…",
+        mask: true,
+      });
+    }
+    if (uni.getStorageSync("token")) {
+      config.headers.Authorization = getToken();
+    }
+  },
+  responseSuccess(response) {
+    const data = response.data;
+    if (data.code !== 200) {
+      console.error(data.msg);
+      showtoast(data.msg);
+    }
+    return data;
+  },
+  responseFail(response) {
+    showtoast(response.errMsg);
+    return { code: 101, msg: response.errMsg };
+  },
+};
 export default {
-  config: {
-    baseUrl: "",
-    headers: {},
-    dataType: "json",
-    responseType: "text",
-  },
-  interceptor: {
-    request: null,
-    response: null,
-  },
   request(options) {
     return new Promise((resolve, reject) => {
-      let _config = null;
-      options.url = this.config.baseUrl + options.url;
-      options.complete = (response) => {
-        let statusCode = response.statusCode;
-
-        response.config = _config;
-
-        if (process.env.NODE_ENV === "development") {
-          if (statusCode === 200) {
-            // console.log("【" + _config.requestId + "】 结果：" + JSON.stringify(response.data))
+      // 请求开始
+      interceptor.request(options);
+      options.url = config.baseUrl + options.url;
+      // 请求属性
+      const requestOptions = Object.assign(config, options);
+      // if (process.env.NODE_ENV === "development") {}
+      uni.request({
+        ...requestOptions,
+        success(requestSuccess) {
+          if (options.isLoading) {
+            uni.hideLoading();
           }
-        }
-
-        if (this.interceptor.response) {
-          let newResponse = this.interceptor.response(response);
-          if (newResponse) {
-            response = newResponse;
+          resolve(interceptor.responseSuccess(requestSuccess));
+        },
+        fail(requestFail) {
+          if (options.isLoading) {
+            uni.hideLoading();
           }
-        }
-
-        if (statusCode === 200) {
-          //成功
-          resolve(response);
-        } else {
-          reject(response);
-        }
-      };
-
-      _config = Object.assign({}, this.config, options);
-      _config.requestId = new Date().getTime();
-
-      if (this.interceptor.request) {
-        this.interceptor.request(_config);
-      }
-
-      if (process.env.NODE_ENV === "development") {
-        // console.log("【" + _config.requestId + "】 地址：" + _config.url)
-        if (_config.data) {
-          // console.log("【" + _config.requestId + "】 参数：" + JSON.stringify(_config.data))
-        }
-      }
-
-      uni.request(_config);
+          reject(interceptor.responseFail(requestFail));
+        },
+        complete(requestComplete) {
+          // console.log("请求结果", requestComplete);
+        },
+      });
     });
   },
-  get(url, data, options) {
-    if (!options) {
-      options = {};
-    }
-    options.url = url;
-    options.data = data;
-    options.method = "GET";
-    return this.request(options);
+  get(url, { data = {}, options = {}, isLoading = true }) {
+    return this.request({ ...options, method: "GET", url, data, isLoading });
   },
-  post(url, data, options) {
-    if (!options) {
-      options = {};
-    }
-    options.url = url;
-    options.data = data;
-    options.method = "POST";
-    return this.request(options);
+  post(url, { data = {}, options = {}, isLoading = true }) {
+    return this.request({ ...options, method: "POST", url, data, isLoading });
   },
-  put(url, data, options) {
-    if (!options) {
-      options = {};
-    }
-    options.url = url;
-    options.data = data;
-    options.method = "PUT";
-    return this.request(options);
+  put(url, { data = {}, options = {}, isLoading = true }) {
+    return this.request({ ...options, method: "PUT", url, data, isLoading });
   },
-  delete(url, data, options) {
-    if (!options) {
-      options = {};
-    }
-    options.url = url;
-    options.data = data;
-    options.method = "DELETE";
-    return this.request(options);
+  delete(url, { data = {}, options = {}, isLoading = true }) {
+    return this.request({ ...options, method: "DELETE", url, data, isLoading });
   },
 };
