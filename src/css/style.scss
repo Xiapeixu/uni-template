@@ -51,6 +51,7 @@
   align-items: flex-end;
 }
 
+.flex-c,
 .flex-column {
   flex-direction: column;
 }
@@ -90,9 +91,14 @@
   padding: $spacing-page;
 }
 
+.padding-lr {
+  padding: 0 $spacing;
+}
+
 .padding-c {
   padding: $spacing-content;
 }
+
 
 .p-t {
   padding-top: $spacing;

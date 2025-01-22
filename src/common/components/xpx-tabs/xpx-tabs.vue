@@ -1,37 +1,41 @@
 <template>
   <scroll-view class="xpx_tabs" :scroll-x="true" :scroll-left="moveInfo.scrollLeft" scroll-with-animation :show-scrollbar="false">
     <view class="flex rela">
-      <view
-        ref="nodeRefs"
-        class="xpx_tab_item f1 t-c"
-        :class="[`xpx_tab_item-${index}`]"
-        v-for="(item, index) in list"
-        :key="index"
-        @tap="clickHandler(item, index)"
-      >
-        <view class="f1">{{ item.label }}</view>
-      </view>
-      <view
-        class="xpx_tab_item__line abso"
-        :style="[
-          {
-            transform: `translate(${moveInfo.lineOffsetLeft}px)`,
-          },
-        ]"
-      ></view>
+      <template v-for="(item, index) in list" :key="index">
+        <view ref="nodeRefs" class="xpx_tab_item f1 t-c" :class="[`xpx_tab_item-${index}`]" @tap="clickHandler(item, index)">
+          <view class="f1">{{ item.label }}</view>
+        </view>
+        <view
+          class="xpx_tab_item__line abso"
+          :style="[
+            {
+              transform: `translate(${moveInfo.lineOffsetLeft}px)`,
+            },
+          ]"
+        ></view>
+      </template>
     </view>
   </scroll-view>
 </template>
 
 <script setup>
-const props = defineProps(["atom"]);
+const { mixins } = defineProps(["mixins"]);
+const options = unref(mixins.componentsOptions);
+
+if (!mixins) {
+  ``;
+  console.error("请传入mixins属性");
+}
+// 组件属性
+if (!options.typeKey) {
+  console.error("请设置typeKey属性");
+}
 // 公共属性
 /**
- * @type {atom}
+ * @type {mixins}
  */
-const atom = props.atom;
 const unit = "px";
-const list = ref(atom.dict[atom.typeKey]);
+const list = ref(unref(mixins.dict)[options.typeKey]);
 // 所有tab节点
 const nodeRefs = ref([]);
 // 关于移动
@@ -48,7 +52,7 @@ const moveInfo = ref({
 });
 
 const innerCurrent = computed(() => {
-  return atom.current;
+  return options.current;
 });
 
 watch([innerCurrent], () => {
@@ -82,7 +86,6 @@ async function resize() {
   try {
     const [tabsRect, itemRect = []] = await Promise.all([getTabsRect(), getAllItemRect()]);
     moveInfo.value.tabsRect = tabsRect;
-    console.log(tabsRect);
     moveInfo.value.scrollViewWidth = 0;
     itemRect.forEach((item, index) => {
       moveInfo.value.scrollViewWidth += item.width;
@@ -109,7 +112,7 @@ function clickHandler(item, index) {
     //   index,
     // });
   }
-  atom.current = index;
+  options.current = index;
 }
 // 设置线的位置
 function setLineLeft() {
@@ -122,7 +125,7 @@ function setLineLeft() {
   // 获取下划线的数值px表示法
   let lineWidth = getPx(moveInfo.value.lineWidth);
   // 如果传的值未带单位+设置了全局单位，则带上单位计算，这样才没有误差
-  if (number(lineWidth) && unit) {
+  if (isNumber(lineWidth) && unit) {
     lineWidth = getPx(`${lineWidth}${unit}`);
   }
   moveInfo.value.lineOffsetLeft = lineOffsetLeft + (tabItem.rect.width - lineWidth) / 2;
@@ -148,20 +151,13 @@ function setScrollLeft() {
     return total + curr.rect.width;
   }, 0);
   // 此处为屏幕宽度
-  const windowWidth = sys().windowWidth;
+  const windowWidth = uni.getSystemInfoSync().windowWidth;
   // 将活动的tabs-item移动到屏幕正中间，实际上是对scroll-view的移动
   let scrollLeft =
     offsetLeft -
     (moveInfo.value.tabsRect.width - tabRect.rect.width) / 2 -
     (windowWidth - moveInfo.value.tabsRect.right) / 2 +
     moveInfo.value.tabsRect.left / 2;
-  console.log(offsetLeft);
-  console.log(moveInfo.value.tabsRect.width);
-  console.log(tabRect.rect.width);
-  console.log(windowWidth);
-  console.log(moveInfo.value.tabsRect.right);
-  console.log(moveInfo.value.tabsRect.left);
-  console.log("----------------------------------------");
   // 这里做一个限制，限制scrollLeft的最大值为整个scroll-view宽度减去tabs组件的宽度
   scrollLeft = Math.min(scrollLeft, moveInfo.value.scrollViewWidth - moveInfo.value.tabsRect.width);
   moveInfo.value.scrollLeft = Math.max(0, scrollLeft);
@@ -211,36 +207,6 @@ function getRect(selector, all) {
       })
       .exec();
   });
-}
-
-/**
- * @description 用于获取用户传递值的px值  如果用户传递了"xxpx"或者"xxrpx"，取出其数值部分，如果是"xxxrpx"还需要用过uni.upx2px进行转换
- * @param {number|string} value 用户传递值的px值
- * @param {boolean} unit
- * @returns {number|string}
- */
-function getPx(value, unit = false) {
-  if (number(value)) {
-    return unit ? `${value}px` : Number(value);
-  }
-  // 如果带有rpx，先取出其数值部分，再转为px值
-  if (/(rpx|upx)$/.test(value)) {
-    return unit ? `${uni.upx2px(parseInt(value))}px` : Number(uni.upx2px(parseInt(value)));
-  }
-  return unit ? `${parseInt(value)}px` : parseInt(value);
-}
-/**
- * 验证十进制数字
- */
-function number(value) {
-  return /^[\+-]?(\d+\.?\d*|\.\d+|\d\.\d+e\+\d+)$/.test(value);
-}
-/**
- * @description 获取系统信息同步接口
- * @link 获取系统信息同步接口 https://uniapp.dcloud.io/api/system/info?id=getsysteminfosync
- */
-function sys() {
-  return uni.getSystemInfoSync();
 }
 </script>
 

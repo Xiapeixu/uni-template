@@ -45,19 +45,16 @@ export default {
       uni.request({
         ...requestOptions,
         success(requestSuccess) {
-          if (options.isLoading) {
-            uni.hideLoading();
-          }
           resolve(interceptor.responseSuccess(requestSuccess));
         },
         fail(requestFail) {
-          if (options.isLoading) {
-            uni.hideLoading();
-          }
           reject(interceptor.responseFail(requestFail));
         },
         complete(requestComplete) {
           // console.log("请求结果", requestComplete);
+          if (options.isLoading) {
+            uni.hideLoading();
+          }
         },
       });
     });
