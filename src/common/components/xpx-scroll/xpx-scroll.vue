@@ -1,48 +1,39 @@
 <template>
   <view>
-    <!-- 列表 -->
-    <xpx-tabs v-if="tempIsShowTab" :mixins="mixins" :style="{ height: tabHeight }"></xpx-tabs>
-    <swiper :current-item-id="`swiper-item-${componentsOptions.current}`" @change="onChange" :style="{ height: `calc(100% - ${tabHeight})` }">
+    <xpx-tabs v-if="!isEmpty(options.typeList)" :mixins="mixins" :style="{ height: tabHeight }"></xpx-tabs>
+    <swiper class="h100" @change="mixins.swiperChange" :current-item-id="`swiper-item-${options.current}`">
       <swiper-item
         class="padding-lr box-s"
-        v-for="(type_item, index) in componentsOptions.typeKey ? dict[componentsOptions.typeKey] : 1"
-        :key="index"
-        :item-id="`swiper-item-${index}`"
+        v-for="(_type_item, type_index) in isEmpty(options.typeList) ? 1 : options.typeList"
+        :key="type_index"
+        :item-id="`swiper-item-${type_index}`"
       >
         <scroll-view
+          :show-scrollbar="false"
           scroll-with-animation
           refresher-default-style="none"
-          :refresher-enabled="refresherEnabled"
+          :refresher-enabled="true"
           refresher-background="transparent"
           scroll-y
-          class="scrollView bg-c-f"
-          :refresher-triggered="componentsOptions.triggered[type_item.value]"
+          class="h100"
+          :refresher-triggered="options.refresherTriggered[type_index]"
           @refresherrefresh="mixins.refresherrefresh"
-          @scrolltolower="mixins.scrolltolower()"
+          @scrolltolower="mixins.scrolltolower"
         >
           <view class="topBox rela center m-b-c">
             <view class="m-l-c loading-text">{{ refreshLoadingText }}</view>
             <image class="svg-loading" src="../static/loading.svg" mode="scaleToFill" />
           </view>
-          <template v-if="!isEmpty(componentsOptions.dataArray[type_item.value])">
-            <view class="m-b-c" v-for="(item, i) in componentsOptions.dataArray[type_item.value]" :key="i">
-              <slot name="item" :row="item" :i="i">
-                <view class="bg-c-g padding border-r-16">
-                  <view>{{ item.subMerchantShortName }}</view>
-                  <view>{{ item.contactName }}</view>
-                  <view>{{ item.frResidence }}</view>
-                  <view>{{ item.bankName }}</view>
-                  <image :src="item.settleCertFrontPic" mode="scaleToFill" />
-                  <view>我的id是：{{ item.id }}</view>
-                </view>
-              </slot>
+          <template v-if="!isEmpty(options.dataArray[type_index])">
+            <view class="m-b-c" v-for="(item, index) in options.dataArray[type_index]" :key="index">
+              <slot :item="item" :index="index"> </slot>
             </view>
-            <view>
-              <view class="rela center m-b-c" v-if="componentsOptions.loadMoreTriggered[type_item.value]">
+            <view class="p-b">
+              <view class="rela center" v-if="options.loadMoreStatus[type_index] === 1">
                 <view class="m-l-c loading-text">{{ loadMoreLoadingText }}</view>
                 <image class="svg-loading" src="../static/loading.svg" mode="scaleToFill" />
               </view>
-              <view class="loading-text t-c center" v-else @click="mixins.scrolltolower(true)">
+              <view class="loading-text t-c center" v-else-if="options.loadMoreStatus[type_index] === 2" @click="mixins.reScrolltolower">
                 <view class="bottom-line"></view>
                 <view style="margin: 0 20rpx">{{ loadCompleteText }}</view>
                 <view class="bottom-line"></view>
@@ -57,43 +48,37 @@
 </template>
 
 <script setup>
-import xpxTabs from "@/common/components/xpx-tabs/xpx-tabs.vue";
 import { isEmpty } from "@/common/tools/verify";
-import { onLoad } from "@dcloudio/uni-app";
 
-const { mixins, isShowTab } = defineProps({
+/**
+ * @typedef {import('@/common/tools/types').scrollMixins} scrollMixins
+ */
+
+/**
+ * 组件参数
+ * @typedef {Object} Props
+ * @property {scrollMixins} mixins
+ */
+
+/** @type {Props} */
+const { mixins } = defineProps({
   mixins: { type: Object, required: true },
+  dict: { type: Array, default: [], required: false },
   isShowTab: { type: Boolean, default: true, required: false },
   tabHeight: { type: String, default: "90rpx", required: false },
   refreshLoadingText: { type: String, default: "正在刷新...", required: false },
   loadMoreLoadingText: { type: String, default: "正在加载...", required: false },
   loadCompleteText: { type: String, default: "已经到底了", required: false },
   refresherEnabled: { type: Boolean, default: true, required: false },
-  emptyIcon: { type: String, required: true },
+  emptyIcon: { type: String, default: "", required: false },
   emptyIconStyle: { type: String, default: "", required: false },
   emptyStyle: { type: String, default: "", required: false },
 });
-
-const { dict, componentsOptions } = mixins;
-// 是否展示标签选项卡
-// 没有设置typeKey就永远不展示
-// 设置了typeKey就通过标签的isShowTab控制是否展示
-let tempIsShowTab = (() => {
-  if (isEmpty(unref(componentsOptions).typeKey)) {
-    return false;
-  } else {
-    return isShowTab;
-  }
-})();
-function onChange(event) {
-  unref(componentsOptions).current = event.detail.current;
-}
+const options = unref(mixins.options);
+// mixins.pageKey;
 </script>
 
 <style lang="scss" scoped>
-.scrollView {
-  height: 100%;
-}
 .topBox {
   margin-top: -80rpx;
   width: 100%;

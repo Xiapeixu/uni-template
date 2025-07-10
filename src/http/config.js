@@ -2,7 +2,7 @@ import baseUrl from "@/http/base.js";
 import { getToken, showtoast } from "@/common/tools/util";
 let config = {
   baseUrl,
-  headers: {},
+  header: {},
   dataType: "json",
   responseType: "text",
   // timeout: 1,
@@ -17,7 +17,7 @@ const interceptor = {
       });
     }
     if (uni.getStorageSync("token")) {
-      config.headers.Authorization = getToken();
+      config.header.Authorization = getToken();
     }
   },
   responseSuccess(response) {

@@ -38,10 +38,73 @@ export function isDate(value) {
 }
 
 /**
- * 验证身份证号码
+ * 验证身份证号码 假校验
  */
-export function isIdCard(value) {
+export function isIdCardFalse(value) {
   return /^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/.test(value);
+}
+
+/**
+ * 校验中国大陆身份证号码 真校验
+ * @param {string} idCard 身份证号码
+ * @returns {boolean} 是否有效
+ */
+export function isIdCard(idCard) {
+  // 基本校验
+  if (typeof idCard !== "string") return false;
+
+  // 18位和15位身份证号码正则
+  const reg18 = /^[1-9]\d{5}(19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}[\dXx]$/;
+  const reg15 = /^[1-9]\d{5}\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}$/;
+
+  // 校验格式
+  if (!reg18.test(idCard) && !reg15.test(idCard)) {
+    return false;
+  }
+
+  // 如果是15位，可以在这里转换为18位进行校验（可选）
+  if (idCard.length === 15) {
+    // 这里可以添加15位转18位的逻辑
+    // 但通常15位身份证已经不再使用，直接返回false
+    return false;
+  }
+
+  // 18位身份证校验码校验
+  if (idCard.length === 18) {
+    // 前17位
+    const str = idCard.substring(0, 17);
+    // 校验码
+    const checkCode = idCard.substring(17).toUpperCase();
+
+    // 加权因子
+    const factor = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+    // 校验码对应值
+    const checkCodeMap = ["1", "0", "X", "9", "8", "7", "6", "5", "4", "3", "2"];
+
+    let sum = 0;
+    for (let i = 0; i < 17; i++) {
+      sum += parseInt(str.charAt(i), 10) * factor[i];
+    }
+
+    const mod = sum % 11;
+    const expectedCheckCode = checkCodeMap[mod];
+
+    if (checkCode !== expectedCheckCode) {
+      return false;
+    }
+
+    // 校验日期是否有效
+    const year = parseInt(idCard.substring(6, 10), 10);
+    const month = parseInt(idCard.substring(10, 12), 10) - 1; // 月份是0-11
+    const day = parseInt(idCard.substring(12, 14), 10);
+    const date = new Date(year, month, day);
+
+    if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 /**

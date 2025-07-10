@@ -1,25 +1,17 @@
 <template>
   <view>
-    <xpx-scroll :mixins="mixins" class="bg-c-f p-b" style="height: 400px" emptyIcon="/static/logo.png"></xpx-scroll>
+    <xpx-scroll :mixins="mixins" class="p-b" style="height: calc(100vh - 100rpx)" emptyIcon="/static/logo.png" v-slot="item">
+      <view class="bg-c-f border-r m-b-c padding"> {{ item }} </view>
+    </xpx-scroll>
   </view>
 </template>
 
 <script setup>
 import { gettakeDineAndDash } from "@/http/api";
-
-const mixins = Mixins({
-  componentsOptions: {
-    typeKey: "templateArray",
-    apiMethod: gettakeDineAndDash,
-  },
+const dict = mixinsDict(["template"]);
+const mixins = mixinsScroll({
+  apiMethod: gettakeDineAndDash,
 });
-// const mixins = Mixins({ componentsOptions: {  } });
-mixins.dicts(["templateArray"]);
-const { query, dict, componentsOptions, currentObj } = mixins;
-function click() {
-  componentsOptions.value.current++;
-  // console.log(dict.value);
-}
 </script>
 
 <style scoped lang="scss">

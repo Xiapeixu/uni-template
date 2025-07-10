@@ -19,23 +19,23 @@
 </template>
 
 <script setup>
-const { mixins } = defineProps(["mixins"]);
-const options = unref(mixins.componentsOptions);
-
-if (!mixins) {
-  ``;
-  console.error("请传入mixins属性");
-}
-// 组件属性
-if (!options.typeKey) {
-  console.error("请设置typeKey属性");
-}
-// 公共属性
 /**
- * @type {mixins}
+ * @typedef {import('@/common/tools/types').scrollMixins} scrollMixins
  */
+
+/**
+ * 组件参数
+ * @typedef {Object} Props
+ * @property {scrollMixins} mixins
+ */
+/** @type {Props} */
+const { mixins } = defineProps({
+  mixins: { type: Object, required: true },
+});
+const options = unref(mixins.options);
+
 const unit = "px";
-const list = ref(unref(mixins.dict)[options.typeKey]);
+const list = ref(options.typeList);
 // 所有tab节点
 const nodeRefs = ref([]);
 // 关于移动
@@ -55,11 +55,14 @@ const innerCurrent = computed(() => {
   return options.current;
 });
 
-watch([innerCurrent], () => {
-  nextTick(() => {
-    resize();
-  });
-});
+watch(
+  () => options.current,
+  () => {
+    nextTick(() => {
+      resize();
+    });
+  }
+);
 
 onMounted(async () => {
   init();
@@ -100,19 +103,9 @@ async function resize() {
 // 点击某一个标签
 function clickHandler(item, index) {
   // 因为标签可能为disabled状态，所以click是一定会发出的，但是change事件是需要可用的状态才发出
-  // this.$emit("click", {
-  //   ...item,
-  //   index,
-  // });
   // 如果disabled状态，返回
   if (item.disabled) return;
-  if (innerCurrent.value != index) {
-    // this.$emit("change", {
-    //   ...item,
-    //   index,
-    // });
-  }
-  options.current = index;
+  mixins.setCurrent(index);
 }
 // 设置线的位置
 function setLineLeft() {

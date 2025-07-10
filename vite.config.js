@@ -8,7 +8,7 @@ export default defineConfig({
     AutoImport({
       imports: ["vue", "uni-app"],
       dts: "src/auto-import.d.ts", //  会自动生成此文件
-      dirs: ["./src/common/tools/**"],
+      dirs: ["./src/common/tools/**","./src/common/mixins/**"],
     }),
   ],
   css: {
