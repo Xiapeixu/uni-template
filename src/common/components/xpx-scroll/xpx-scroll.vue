@@ -75,7 +75,6 @@ const { mixins } = defineProps({
   emptyStyle: { type: String, default: "", required: false },
 });
 const options = unref(mixins.options);
-// mixins.pageKey;
 </script>
 
 <style lang="scss" scoped>

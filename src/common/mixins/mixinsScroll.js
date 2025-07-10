@@ -106,7 +106,7 @@ export default ({
       methods.operationLoadMoreStatus(1);
       methods.getList();
     },
-    // 没有更多数据时，点击再次加载
+    // 没有更多数据时，再次加载
     async reScrolltolower() {
       methods.operationLoadMoreStatus(1);
       methods.scrolltolower();
