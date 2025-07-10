@@ -7,7 +7,6 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-/src/auto-import.d.ts
 node_modules
 .DS_Store
 dist
@@ -23,3 +22,4 @@ dist
 提交
 
 src/pages/test/
+src/auto-import.d.ts
