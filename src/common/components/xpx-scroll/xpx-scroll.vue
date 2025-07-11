@@ -1,9 +1,12 @@
 <template>
   <view>
+    <!-- 类型 -->
     <xpx-tabs v-if="!isEmpty(options.typeList)" :mixins="mixins" :style="{ height: tabHeight }"></xpx-tabs>
+    <!-- 搜索 -->
     <view class="padding-lr">
       <slot name="search"></slot>
     </view>
+    <!-- 列表 -->
     <swiper class="h100" @change="swiperChange" :current-item-id="`swiper-item-${options.current}`">
       <swiper-item
         class="padding-lr box-s"
@@ -67,12 +70,10 @@ import { isEmpty } from "@/common/tools/verify";
 const { mixins } = defineProps({
   mixins: { type: Object, required: true },
   dict: { type: Array, default: [], required: false },
-  isShowTab: { type: Boolean, default: true, required: false },
   tabHeight: { type: String, default: "90rpx", required: false },
   refreshLoadingText: { type: String, default: "正在刷新...", required: false },
   loadMoreLoadingText: { type: String, default: "正在加载...", required: false },
   loadCompleteText: { type: String, default: "已经到底了", required: false },
-  refresherEnabled: { type: Boolean, default: true, required: false },
   emptyIcon: { type: String, default: "", required: false },
   emptyIconStyle: { type: String, default: "", required: false },
   emptyStyle: { type: String, default: "", required: false },
