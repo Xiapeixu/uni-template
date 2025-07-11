@@ -20,6 +20,7 @@ dist
 *.sln
 *.sw?
 提交
+yarn.lock
 
 src/pages/test/
 src/auto-import.d.ts

@@ -1,7 +1,10 @@
 <template>
   <view>
     <xpx-tabs v-if="!isEmpty(options.typeList)" :mixins="mixins" :style="{ height: tabHeight }"></xpx-tabs>
-    <swiper class="h100" @change="mixins.swiperChange" :current-item-id="`swiper-item-${options.current}`">
+    <view class="padding-lr">
+      <slot name="search"></slot>
+    </view>
+    <swiper class="h100" @change="swiperChange" :current-item-id="`swiper-item-${options.current}`">
       <swiper-item
         class="padding-lr box-s"
         v-for="(_type_item, type_index) in isEmpty(options.typeList) ? 1 : options.typeList"
@@ -75,6 +78,23 @@ const { mixins } = defineProps({
   emptyStyle: { type: String, default: "", required: false },
 });
 const options = unref(mixins.options);
+
+// 多个列表修改时
+function swiperChange({ detail }) {
+  options.current = detail.current;
+}
+// 事件
+const emits = defineEmits(["change"]);
+// 监听类型改变时
+watch(
+  () => options.current,
+  async () => {
+    emits("change", { item: options.currentItem, index: options.current });
+    if (isEmpty(options.dataArray[options.current])) {
+      mixins.init();
+    }
+  }
+);
 </script>
 
 <style lang="scss" scoped>

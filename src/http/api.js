@@ -22,19 +22,23 @@ export function gettakeDineAndDash(data) {
         code: 200,
         msg: "success",
       };
-      switch (data.pageNum) {
-        case 1:
-          res.data.list = data1;
-          break;
-        case 2:
-          if (data.name) {
-            res.data.list = data3;
-          } else {
-            res.data.list = data2;
-          }
-          break;
-        default:
-          res.data.list = [];
+      if (data.search) {
+        res.data.list = [];
+      } else {
+        switch (data.pageNum) {
+          case 1:
+            res.data.list = data1;
+            break;
+          case 2:
+            if (data.name) {
+              res.data.list = data3;
+            } else {
+              res.data.list = data2;
+            }
+            break;
+          default:
+            res.data.list = [];
+        }
       }
       resolve(res);
     }, 300);

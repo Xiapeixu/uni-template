@@ -40,8 +40,13 @@ export default ({
       if (code == 200) {
         // 请求数据为空时
         if (isEmpty(data.list)) {
-          methods.operationPage(1);
-          methods.operationLoadMoreStatus(2);
+          if (isReset) {
+            methods.operationLoadMoreStatus(0);
+            ref_data.dataArray[ref_data.current] = data.list;
+          } else {
+            methods.operationPage(1);
+            methods.operationLoadMoreStatus(2);
+          }
         } else {
           // 直接赋值时要用的数据
           let assignList = data.list;
@@ -90,6 +95,10 @@ export default ({
         methods.operationRefresherTriggered(true);
         // 跳转到第一页 并重置列表
         methods.operationPage(2, 1);
+        // 取消去重
+        ref_data.isDuplicate[ref_data.current] = false;
+        // 可以加载更多
+        methods.operationLoadMoreStatus(1);
         await methods.getList(true);
       } catch (error) {
         console.error(error);
@@ -111,7 +120,17 @@ export default ({
       methods.operationLoadMoreStatus(1);
       methods.scrolltolower();
     },
-    // 操作页码 status 0:加1、1:减1、2:跳转某个页面
+    // 搜索
+    async searchList() {
+      // 跳转到第一页 并重置列表
+      methods.operationPage(2, 1);
+      methods.getList(true);
+    },
+    /**
+     *
+     * @param {*} status - 操作类型  0:加1、1:减1、2:跳转某个页面
+     * @param {*} num - 当status是2的时候需要传入
+     */
     operationPage(status, num) {
       switch (status) {
         case 0:
@@ -130,26 +149,28 @@ export default ({
           break;
       }
     },
-    // 操作加载状态 0:首次进来不显示、1:加载中、2:没有更多数据
+    /**
+     *
+     * @param {*} status  - 加载状态0:首次进来不显示、1:加载中、2:没有更多数据
+     */
     operationLoadMoreStatus(status) {
       ref_data.loadMoreStatus[ref_data.current] = status;
     },
-    // 操作刷新状态  true:正在刷新、false:没有刷新
+    /**
+     *
+     * @param {*} status - 操作类型 true:正在刷新、false:没有刷新
+     */
     operationRefresherTriggered(status) {
       ref_data.refresherTriggered[ref_data.current] = status;
-    },
-    // 多个列表修改时
-    swiperChange({ detail }) {
-      ref_data.current = detail.current;
-      if (isEmpty(ref_data.dataArray[ref_data.current])) {
-        methods.init();
-      }
     },
     // 设置当前选中
     setCurrent(current) {
       ref_data.current = current;
     },
-    // 初始化分页参数
+    /**
+     * 初始化分页参数
+     * @param {*} current 某个类型的下标
+     */
     initPageParams(current) {
       ref_data.pageParams = {
         ...ref_data.pageParams,
