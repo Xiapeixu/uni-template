@@ -37,7 +37,10 @@ export default ({
   const ref_data = unref(data.options);
   // 方法
   const methods = {
-    // 获取列表 flag:是否重置列表
+    /**
+     * 获取列表
+     * @param {*} flag 是否重置列表
+     */
     async getList(flag = false) {
       let isReset = flag;
       try {
@@ -136,9 +139,9 @@ export default ({
       methods.getList(true);
     },
     /**
-     *
+     * 操作分页
      * @param {*} status - 操作类型  0:加1、1:减1、2:跳转某个页面
-     * @param {*} num - 当status是2的时候需要传入
+     * @param {*} num - 要跳转的页码,当status是2的时候需要传入
      */
     operationPage(status, num) {
       switch (status) {
@@ -159,14 +162,14 @@ export default ({
       }
     },
     /**
-     *
+     * 操作加载状态
      * @param {*} status  - 加载状态0:首次进来不显示、1:加载中、2:没有更多数据
      */
     operationLoadMoreStatus(status) {
       ref_data.loadMoreStatus[ref_data.current] = status;
     },
     /**
-     *
+     * 操作刷新状态
      * @param {*} status - 操作类型 true:正在刷新、false:没有刷新
      */
     operationRefresherTriggered(status) {
@@ -207,11 +210,21 @@ export default ({
       const { numKey, sizeKey } = ref_data.pageKey;
       return { [numKey]: pageParams[numKey], [sizeKey]: pageParams[sizeKey] };
     },
-    // 设置搜索条件
-    setQuery(query) {
+    /**
+     * 设置搜索条件
+     * @param {Object} query 搜索条件
+     * @param {Boolean} isQuery 是否立即搜索 默认false
+     */
+    setQuery(query, isQuery = false) {
       ref_data.query = { ...ref_data.query, ...query };
+      if (isQuery) {
+        methods.searchList();
+      }
     },
-    // 删除搜索条件
+    /**
+     * 删除搜索条件
+     * @param {*} keys 要删除的健值
+     */
     delQuery(keys = []) {
       keys.forEach((key) => {
         delete ref_data.query[key];
