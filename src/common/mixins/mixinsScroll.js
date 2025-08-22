@@ -7,6 +7,8 @@ export default ({
   // 分页参数 默认值
   pageKey: { num = 1, numKey = "pageNum", size = 10, sizeKey = "pageSize" } = {},
   typeList = [], // 多个列表类型
+  dataKey = "list", // 接口返回的结构
+  onlyValue = "id", // 对象中的唯一值
 } = {}) => {
   // 属性
   const data = {
@@ -15,6 +17,8 @@ export default ({
       apiMethod, // 接口
       query, // 查询参数
       typeList, // 多个列表类型
+      dataKey, // 接口返回的结构
+      onlyValue, // 对象中的唯一值
       current, // 当前选中
       currentItem: {}, // 当前选中
       // 分页参数 默认值
@@ -33,31 +37,34 @@ export default ({
   const ref_data = unref(data.options);
   // 方法
   const methods = {
-    // 获取列表
+    // 获取列表 flag:是否重置列表
     async getList(flag = false) {
       let isReset = flag;
-      const { code, data, msg } = await ref_data.apiMethod({ ...ref_data.query, ...ref_data.pageParams[ref_data.current] });
-      if (code == 200) {
+      try {
+        const { data } = await ref_data.apiMethod({ ...ref_data.query, ...ref_data.pageParams[ref_data.current] });
+        // 有些接口可能是不同的结构
+        const _data = ref_data.dataKey ? data[ref_data.dataKey] : data;
         // 请求数据为空时
-        if (isEmpty(data.list)) {
+        if (isEmpty(_data)) {
           if (isReset) {
             methods.operationLoadMoreStatus(0);
-            ref_data.dataArray[ref_data.current] = data.list;
+            ref_data.dataArray[ref_data.current] = _data;
           } else {
             methods.operationPage(1);
             methods.operationLoadMoreStatus(2);
           }
         } else {
           // 直接赋值时要用的数据
-          let assignList = data.list;
+          let assignList = _data;
           // 需要去重
           if (ref_data.isDuplicate[ref_data.current]) {
             // 将列表数据和请求数据的合并去重
-            const map = new Map(ref_data.dataArray[ref_data.current].map((item) => [item.id, item]));
+            const map = new Map(ref_data.dataArray[ref_data.current].map((item) => [item[ref_data.onlyValue], item]));
             assignList.forEach((item) => {
-              map.set(item.id, { ...(map.get(item.id) || {}), ...item });
+              map.set(item[ref_data.onlyValue], { ...(map.get(item[ref_data.onlyValue]) || {}), ...item });
             });
-            assignList = [...map.values()].sort((a, b) => a.id - b.id);
+            // 排序?
+            assignList = [...map.values()];
             isReset = true;
           }
           // 列表数据为空或者是刷新时 直接赋值
@@ -65,10 +72,10 @@ export default ({
             ref_data.dataArray[ref_data.current] = assignList;
           } else {
             // 列表数据有值时就是合并
-            ref_data.dataArray[ref_data.current] = ref_data.dataArray[ref_data.current].concat(data.list);
+            ref_data.dataArray[ref_data.current] = ref_data.dataArray[ref_data.current].concat(_data);
           }
           // 请求数据长度小于分页大小时
-          if (data.list.length < ref_data.pageParams[ref_data.current][ref_data.pageKey.sizeKey]) {
+          if (_data.length < ref_data.pageParams[ref_data.current][ref_data.pageKey.sizeKey]) {
             methods.operationLoadMoreStatus(2);
             methods.operationPage(1);
             // 去重
@@ -77,7 +84,7 @@ export default ({
             ref_data.isDuplicate[ref_data.current] = false;
           }
         }
-      } else {
+      } catch (error) {
         // 请求失败
         console.error(msg);
       }
@@ -124,6 +131,8 @@ export default ({
     async searchList() {
       // 跳转到第一页 并重置列表
       methods.operationPage(2, 1);
+      // 取消去重
+      ref_data.isDuplicate[ref_data.current] = false;
       methods.getList(true);
     },
     /**
@@ -180,7 +189,36 @@ export default ({
         },
       };
     },
+    // 设置分页参数
+    setPageKey(current, options = {}) {
+      const { numKey, sizeKey } = ref_data.pageKey;
+      const { numKey: newNumKey, sizeKey: newSizeKey } = options;
+      if (!ref_data.pageParams[current][newNumKey]) {
+        ref_data.pageParams[current] = {
+          [newNumKey]: ref_data.pageParams[current][numKey],
+          [newSizeKey]: ref_data.pageParams[current][sizeKey],
+        };
+      }
+      ref_data.pageKey = { ...ref_data.pageKey, ...options };
+    },
+    // 获取分页参数
+    getPageParams() {
+      const pageParams = ref_data.pageParams[ref_data.current];
+      const { numKey, sizeKey } = ref_data.pageKey;
+      return { [numKey]: pageParams[numKey], [sizeKey]: pageParams[sizeKey] };
+    },
+    // 设置搜索条件
+    setQuery(query) {
+      ref_data.query = { ...ref_data.query, ...query };
+    },
+    // 删除搜索条件
+    delQuery(keys = []) {
+      keys.forEach((key) => {
+        delete ref_data.query[key];
+      });
+    },
   };
+  // 监听
   watch(
     () => ref_data.current,
     () => {

@@ -1,13 +1,22 @@
 <template>
-  <view>
+  <view class="h100 flex-c">
     <!-- 类型 -->
-    <xpx-tabs v-if="!isEmpty(options.typeList)" :mixins="mixins" :style="{ height: tabHeight }"></xpx-tabs>
+    <view class="bg-c-f" v-if="!isEmpty(options.typeList)">
+      <xpx-tabs id="scroll-tabs" :mixins="mixins" :style="{ height: tabHeight }" :keyName="keyName" :scrollable="scrollable" />
+    </view>
     <!-- 搜索 -->
-    <view class="padding-lr">
+    <view class="scroll-search">
       <slot name="search"></slot>
     </view>
     <!-- 列表 -->
-    <swiper class="h100" @change="swiperChange" :current-item-id="`swiper-item-${options.current}`">
+    <swiper
+      class="f1"
+      :disable-touch="isEmpty(options.typeList)"
+      :current-item-id="`swiper-item-${options.current}`"
+      @change="swiperChange"
+      @transition="onTransition"
+      @animationfinish="onAnimationfinish"
+    >
       <swiper-item
         class="padding-lr box-s"
         v-for="(_type_item, type_index) in isEmpty(options.typeList) ? 1 : options.typeList"
@@ -18,9 +27,9 @@
           :show-scrollbar="false"
           scroll-with-animation
           refresher-default-style="none"
-          :refresher-enabled="true"
+          :refresher-enabled="isRefresher"
           refresher-background="transparent"
-          scroll-y
+          :scroll-y="isRefresher"
           class="h100"
           :refresher-triggered="options.refresherTriggered[type_index]"
           @refresherrefresh="mixins.refresherrefresh"
@@ -28,16 +37,16 @@
         >
           <view class="topBox rela center m-b-c">
             <view class="m-l-c loading-text">{{ refreshLoadingText }}</view>
-            <image class="svg-loading" src="../static/loading.svg" mode="scaleToFill" />
+            <image class="svg-loading" src="/static/loading.svg" mode="scaleToFill" />
           </view>
           <template v-if="!isEmpty(options.dataArray[type_index])">
             <view class="m-b-c" v-for="(item, index) in options.dataArray[type_index]" :key="index">
-              <slot :item="item" :index="index"> </slot>
+              <slot :item="item" :index="index" :typeIndex="type_index"> </slot>
             </view>
             <view class="p-b">
               <view class="rela center" v-if="options.loadMoreStatus[type_index] === 1">
                 <view class="m-l-c loading-text">{{ loadMoreLoadingText }}</view>
-                <image class="svg-loading" src="../static/loading.svg" mode="scaleToFill" />
+                <image class="svg-loading" src="/static/loading.svg" mode="scaleToFill" />
               </view>
               <view class="loading-text t-c center" v-else-if="options.loadMoreStatus[type_index] === 2" @click="mixins.reScrolltolower">
                 <view class="bottom-line"></view>
@@ -46,7 +55,7 @@
               </view>
             </view>
           </template>
-          <xpx-empty :customStyle="emptyStyle" :icon="emptyIcon" v-else />
+          <xpx-empty :iconStyle="emptyIconStyle" :customStyle="emptyStyle" :icon="emptyIcon" :emptyLabel="emptyLabel" v-else />
         </scroll-view>
       </swiper-item>
     </swiper>
@@ -67,16 +76,19 @@ import { isEmpty } from "@/common/tools/verify";
  */
 
 /** @type {Props} */
-const { mixins } = defineProps({
+const { mixins, tabHeight } = defineProps({
   mixins: { type: Object, required: true },
   dict: { type: Array, default: [], required: false },
   tabHeight: { type: String, default: "90rpx", required: false },
   refreshLoadingText: { type: String, default: "正在刷新...", required: false },
   loadMoreLoadingText: { type: String, default: "正在加载...", required: false },
   loadCompleteText: { type: String, default: "已经到底了", required: false },
-  emptyIcon: { type: String, default: "", required: false },
-  emptyIconStyle: { type: String, default: "", required: false },
-  emptyStyle: { type: String, default: "", required: false },
+  emptyIcon: { type: String, default: "https://dummyimage.com/120x148/3c9cff/fff", required: false },
+  emptyIconStyle: { type: Object, default: { width: "120px", height: "148px" }, required: false },
+  emptyStyle: { type: Object, default: { height: "70%" }, required: false },
+  keyName: { type: String, default: "label", required: false },
+  scrollable: { type: Boolean, default: false, required: false },
+  emptyLabel: { type: String, default: "暂无数据", required: false },
 });
 const options = unref(mixins.options);
 
@@ -96,6 +108,16 @@ watch(
     }
   }
 );
+// 切换左右时不允许刷新
+const isRefresher = ref(true);
+// 开始滑动
+function onTransition(event) {
+  isRefresher.value = false;
+}
+// 结束滑动
+function onAnimationfinish() {
+  isRefresher.value = true;
+}
 </script>
 
 <style lang="scss" scoped>

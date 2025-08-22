@@ -1,4 +1,3 @@
-import atomEnum from "./atom-enum";
 // 混入
 export default (componentsOptions = {}) => {
   // 属性
